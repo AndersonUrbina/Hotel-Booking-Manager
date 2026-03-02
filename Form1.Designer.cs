@@ -1,4 +1,6 @@
-﻿namespace Hotel_Booking_Manager;
+﻿using HotelBookingManager;
+
+namespace Hotel_Booking_Manager;
 
 partial class Form1
 {
@@ -6,6 +8,36 @@ partial class Form1
     ///  Required designer variable.
     /// </summary>
     private System.ComponentModel.IContainer components = null;
+
+    //Declare a BookingManager object
+    private readonly HotelBookingManager.BookingManager manager = new();
+
+    //Void to load selected booking into the form inputs
+    private void LoadBookingToForm()
+    {
+        if (lvBookings.SelectedItems.Count == 0) return;
+        var sel = lvBookings.SelectedItems[0];
+        tbRoomNumber.Text = sel.SubItems[0].Text;
+        dtCheckIn.Value = DateTime.Parse(sel.SubItems[1].Text);
+        dtCheckOut.Value = DateTime.Parse(sel.SubItems[2].Text);
+        tbGuestName.Text = sel.SubItems[3].Text;
+        SetStatus("Loaded selection intro inputs.", success: true);
+    }
+
+    //Void to update Status label
+    private void SetStatus(string message, bool success)
+    {
+        lblStatus.Text = message;
+        lblStatus.ForeColor = success ? Color.FromArgb(24, 128, 28) : Color.FromArgb(176, 32, 32);
+    }
+
+    //Void to clear the form inputs
+    private void clearInputs()
+    {
+        tbGuestName.Clear();
+        tbRoomNumber.Clear();
+        tbGuestName.Focus();
+    }
 
     /// <summary>
     ///  Clean up any resources being used.
@@ -41,8 +73,8 @@ partial class Form1
         btnCancelBooking = new Button();
         btnViewAllBooking = new Button();
         btnExit = new Button();
-        btnStatus = new Button();
         lvBookings = new ListView();
+        lblStatus = new Label();
         SuspendLayout();
         // 
         // IbWelcomeLabel
@@ -169,16 +201,6 @@ partial class Form1
         btnExit.Text = "Exit";
         btnExit.UseVisualStyleBackColor = true;
         // 
-        // btnStatus
-        // 
-        btnStatus.Location = new Point(98, 401);
-        btnStatus.Name = "btnStatus";
-        btnStatus.Size = new Size(87, 23);
-        btnStatus.TabIndex = 14;
-        btnStatus.Text = "Status";
-        btnStatus.UseVisualStyleBackColor = true;
-        btnStatus.Click += button1_Click_1;
-        // 
         // lvBookings
         // 
         lvBookings.Location = new Point(98, 244);
@@ -187,14 +209,25 @@ partial class Form1
         lvBookings.TabIndex = 15;
         lvBookings.UseCompatibleStateImageBehavior = false;
         // 
+        // lblStatus
+        // 
+        lblStatus.AutoSize = true;
+        lblStatus.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        lblStatus.ForeColor = SystemColors.ControlLight;
+        lblStatus.Location = new Point(98, 392);
+        lblStatus.Name = "lblStatus";
+        lblStatus.Size = new Size(53, 20);
+        lblStatus.TabIndex = 16;
+        lblStatus.Text = "Ready.";
+        // 
         // Form1
         // 
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
         BackColor = Color.Black;
         ClientSize = new Size(800, 450);
+        Controls.Add(lblStatus);
         Controls.Add(lvBookings);
-        Controls.Add(btnStatus);
         Controls.Add(btnExit);
         Controls.Add(btnViewAllBooking);
         Controls.Add(btnCancelBooking);
@@ -229,6 +262,6 @@ partial class Form1
     private Button btnCancelBooking;
     private Button btnViewAllBooking;
     private Button btnExit;
-    private Button btnStatus;
     private ListView lvBookings;
+    private Label lblStatus;
 }
