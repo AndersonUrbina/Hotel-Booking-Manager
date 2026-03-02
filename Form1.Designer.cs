@@ -12,6 +12,22 @@ partial class Form1
     //Declare a BookingManager object
     private readonly HotelBookingManager.BookingManager manager = new();
 
+    //Void to Cancel a Booking
+    private void CancelBooking()
+    { 
+        //Get information from the text boxes
+        var room = tbRoomNumber.Text;
+        var guest = tbGuestName.Text;
+
+        //Reject empty textboxes
+        if (string.IsNullOrWhiteSpace(room) || string.IsNullOrWhiteSpace(guest))
+        {
+            MessageBox.Show("Enter both Room and Guest to cancel.", "Cancel Booking",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+    }
+
     //Method to refresh the Bookng List View
     private void RefreshList()
     {
