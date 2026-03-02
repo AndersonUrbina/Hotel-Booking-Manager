@@ -12,6 +12,28 @@ partial class Form1
     //Declare a BookingManager object
     private readonly HotelBookingManager.BookingManager manager = new();
 
+    //Method to refresh the Bookng List View
+    private void RefreshList()
+    {
+        lvBookings.BeginUpdate();
+        lvBookings.Items.Clear();
+
+        foreach (var b in manager.All())
+        {
+            var item = new ListViewItem(new[]
+            { 
+                b.RoomNumber,
+                b.CheckIn.ToString("yyyy-MM-dd HH:mm"),
+                b.CheckOut.ToString("yyyy-MM-dd HH:mm"),
+                b.GuestName
+            });
+            lvBookings.Items.Add(item);
+        }
+        lvBookings.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+        lvBookings.EndUpdate();
+        SetStatus($"Loaded {lvBookings.Items.Count} booking(s).", success: true);
+    }
+
     //Void to load selected booking into the form inputs
     private void LoadBookingToForm()
     {
