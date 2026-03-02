@@ -48,11 +48,11 @@ partial class Form1
         // IbWelcomeLabel
         // 
         IbWelcomeLabel.AutoSize = true;
-        IbWelcomeLabel.Font = new Font("Bodoni MT Condensed", 26.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+        IbWelcomeLabel.Font = new Font("Bodoni MT Condensed", 27.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
         IbWelcomeLabel.ForeColor = SystemColors.ControlLight;
         IbWelcomeLabel.Location = new Point(209, 9);
         IbWelcomeLabel.Name = "IbWelcomeLabel";
-        IbWelcomeLabel.Size = new Size(370, 41);
+        IbWelcomeLabel.Size = new Size(383, 44);
         IbWelcomeLabel.TabIndex = 0;
         IbWelcomeLabel.Text = "Welcome To The Home2 Hotel";
         IbWelcomeLabel.Click += IbWelcomeLabel_Click;
