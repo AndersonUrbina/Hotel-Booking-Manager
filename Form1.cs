@@ -41,4 +41,14 @@ public partial class Form1 : Form
     {
 
     }
+
+    private void tbRoomNumber_TextChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void lvBookings_SelectedIndexChanged(object sender, EventArgs e)
+    {
+
+    }
 }

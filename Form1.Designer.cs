@@ -12,6 +12,57 @@ partial class Form1
     //Declare a BookingManager object
     private readonly HotelBookingManager.BookingManager manager = new();
 
+    //Event sender method
+    private void btnBookRoom_Click(object sender, EventArgs e) => BookRoom();
+    private void btnCancelBooking_Click(object sender, EventArgs e) => CancelBooking();
+    private void btnViewAllBooking_Click(object sender, EventArgs e) => RefreshList();
+    private void btnExit_Click(object sender, EventArgs e) => Close();
+
+    //Void to Book a Hotel Room
+    private void BookRoom()
+    {
+        try
+        {
+            var room = tbRoomNumber.Text.Trim();
+            var guest = tbGuestName.Text.Trim();
+            var c_in = dtCheckIn.Value;
+            var c_out = dtCheckOut.Value;
+
+            //Validate that Guest and Room are not empty
+            if (string.IsNullOrWhiteSpace(room) || string.IsNullOrWhiteSpace(guest))
+                throw new ArgumentException("Guest Name and Room Number are required.");
+            //Validate that Check-out is after Check-in
+            if (c_out <= c_in)
+                throw new ArgumentException("Check-out must be after Check-in.");
+            //Create a booking and add it
+            var b = new Booking(room, guest, c_in, c_out);
+            manager.Add(b);
+
+            //Call helpers
+            RefreshList();
+            clearInputs();
+            SetStatus($"Booked room {room} for {guest} from {c_in:MM/dd/yyyy} to {c_out:MM/dd/yyyy}.", success: true);
+
+            //If successful, refresh the list, clear the inputs, and update the status label. Otherwise, show a message box.
+        }
+        catch (ArgumentException ex)
+        {
+            MessageBox.Show(ex.Message, "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            SetStatus(ex.Message, success: false);
+        }
+        catch (InvalidOperationException ex)
+        {
+            MessageBox.Show(ex.Message, "Booking Conflict", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            SetStatus(ex.Message, success: false);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Unexpected error. See detyails.\n " + ex.Message, "Error",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            SetStatus("Unexpected error occurred.", success: false);
+        }
+    }
+
     //Void to Cancel a Booking
     private void CancelBooking()
     { 
@@ -25,6 +76,21 @@ partial class Form1
             MessageBox.Show("Enter both Room and Guest to cancel.", "Cancel Booking",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
+        }
+        
+        //Attemp to Cancel the reservation. If successful, refresh the list and clear the inputs. Otherwise, show a message box.
+        var ok = manager.Cancel(room, guest);
+        if (ok)
+        {
+            RefreshList();
+            clearInputs();
+            SetStatus($"Canceled booking for {guest} in room {room}.", success: true);
+        }
+        else
+        {
+            MessageBox.Show("No matching booking found to cancel.", "Cancel Booking",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            SetStatus("No matching booking found.", success: false);
         }
     }
 
@@ -112,6 +178,10 @@ partial class Form1
         btnViewAllBooking = new Button();
         btnExit = new Button();
         lvBookings = new ListView();
+        Room = new ColumnHeader();
+        Check_In = new ColumnHeader();
+        Check_Out = new ColumnHeader();
+        Guest = new ColumnHeader();
         lblStatus = new Label();
         SuspendLayout();
         // 
@@ -187,6 +257,7 @@ partial class Form1
         tbRoomNumber.Size = new Size(100, 23);
         tbRoomNumber.TabIndex = 6;
         tbRoomNumber.Text = "Room (e,g., 101)";
+        tbRoomNumber.TextChanged += tbRoomNumber_TextChanged;
         // 
         // dtCheckIn
         // 
@@ -210,7 +281,7 @@ partial class Form1
         btnBookRoom.TabIndex = 10;
         btnBookRoom.Text = "Book Room";
         btnBookRoom.UseVisualStyleBackColor = true;
-        btnBookRoom.Click += button1_Click;
+        btnBookRoom.Click += btnBookRoom_Click;
         // 
         // btnCancelBooking
         // 
@@ -220,6 +291,7 @@ partial class Form1
         btnCancelBooking.TabIndex = 11;
         btnCancelBooking.Text = "Cancel Booking";
         btnCancelBooking.UseVisualStyleBackColor = true;
+        btnCancelBooking.Click += btnCancelBooking_Click;
         // 
         // btnViewAllBooking
         // 
@@ -229,6 +301,7 @@ partial class Form1
         btnViewAllBooking.TabIndex = 12;
         btnViewAllBooking.Text = "View All Booking";
         btnViewAllBooking.UseVisualStyleBackColor = true;
+        btnViewAllBooking.Click += btnViewAllBooking_Click;
         // 
         // btnExit
         // 
@@ -238,14 +311,39 @@ partial class Form1
         btnExit.TabIndex = 13;
         btnExit.Text = "Exit";
         btnExit.UseVisualStyleBackColor = true;
+        btnExit.Click += btnExit_Click;
         // 
         // lvBookings
         // 
+        lvBookings.Columns.AddRange(new ColumnHeader[] { Room, Check_In, Check_Out, Guest });
+        lvBookings.LabelEdit = true;
         lvBookings.Location = new Point(98, 244);
         lvBookings.Name = "lvBookings";
         lvBookings.Size = new Size(576, 135);
         lvBookings.TabIndex = 15;
         lvBookings.UseCompatibleStateImageBehavior = false;
+        lvBookings.View = View.Details;
+        lvBookings.SelectedIndexChanged += lvBookings_SelectedIndexChanged;
+        // 
+        // Room
+        // 
+        Room.Text = "Room";
+        Room.Width = 80;
+        // 
+        // Check_In
+        // 
+        Check_In.Text = "Check-In";
+        Check_In.Width = 140;
+        // 
+        // Check_Out
+        // 
+        Check_Out.Text = "Check-Out";
+        Check_Out.Width = 140;
+        // 
+        // Guest
+        // 
+        Guest.Text = "Guest";
+        Guest.Width = 250;
         // 
         // lblStatus
         // 
@@ -302,4 +400,8 @@ partial class Form1
     private Button btnExit;
     private ListView lvBookings;
     private Label lblStatus;
+    private ColumnHeader Room;
+    private ColumnHeader Check_In;
+    private ColumnHeader Check_Out;
+    private ColumnHeader Guest;
 }
